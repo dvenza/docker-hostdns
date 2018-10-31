@@ -113,7 +113,7 @@ class NamedUpdater(object):
         
         rcode = response.rcode()
         if rcode != dns.rcode.NOERROR:
-            raise DnsException("Adding host failed with %s" % dns.rcode.to_text(rcode))
+            raise DnsException("Updating host failed with %s" % dns.rcode.to_text(rcode))
     
     def remove_host(self, hosts):
         self.logger.debug("Removing host %r", hosts)
@@ -124,6 +124,8 @@ class NamedUpdater(object):
         update = dns.update.Update(self._dns_zone, keyring=self.keyring)
         
         for host in hosts:
+            if len(host) > 63:
+                host = host[:63]
             dns_name_single = dns.name.from_text(host, self._dns_zone)
             dns_name_multi = dns.name.from_text("*.%s" % host, self._dns_zone)
             

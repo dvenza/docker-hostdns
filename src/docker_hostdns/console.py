@@ -86,8 +86,9 @@ def execute(argv = None):
         formatter = logging.Formatter(p.prog+' [%(name)s] %(message)s', '%b %e %H:%M:%S')
         h.setFormatter(formatter)
         handlers = [h]
-    
-    logging.basicConfig(level=levels[min(conf.verbose, len(levels)-1)], handlers=handlers)
+        logging.basicConfig(level=levels[min(conf.verbose, len(levels)-1)], handlers=handlers)
+    else:
+        logging.basicConfig(level=levels[min(conf.verbose, len(levels)-1)])
     
     dns_updater = NamedUpdater(conf.zone, conf.dns_server, keyring, conf.name)
     d = DockerHandler(dns_updater)
@@ -103,7 +104,6 @@ def execute(argv = None):
             d.run()
         except Exception as e:
             logger.exception(e)
-            raise e
         
         if conf.clear_on_exit:
             dns_updater.set_hosts({})
@@ -114,3 +114,4 @@ def execute(argv = None):
             run()
     else:
         run()
+

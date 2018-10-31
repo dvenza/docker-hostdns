@@ -99,11 +99,17 @@ class NamedUpdater(object):
         
             update.add(self._dns_txt_record, 1, dns.rdatatype.TXT, host)
         
-        self._update(update)
-        self.hosts.update(names)
+        try:
+            self._update(update)
+        except dns.exception.Timeout:
+            self.logger.error('DNS timeout adding host {}'.format(names))
+        except DnsException as e:
+            self.logger.error(str(e))
+        else:
+            self.hosts.update(names)
     
     def _update(self, update):
-        response = dns.query.tcp(update, self.dns_server, timeout=2)
+        response = dns.query.tcp(update, self.dns_server, timeout=5)
         
         rcode = response.rcode()
         if rcode != dns.rcode.NOERROR:

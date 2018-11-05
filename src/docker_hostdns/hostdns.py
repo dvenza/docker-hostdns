@@ -83,6 +83,8 @@ class NamedUpdater(object):
         update = dns.update.Update(self._dns_zone, keyring=self.keyring)
         
         for host in names:
+            if len(host) > 63:
+                host = host[:63]
             if ipv4s or ipv6s:
                 dns_name_single = dns.name.from_text(host, self._dns_zone)
                 dns_name_multi = dns.name.from_text("*.%s" % host, self._dns_zone)
